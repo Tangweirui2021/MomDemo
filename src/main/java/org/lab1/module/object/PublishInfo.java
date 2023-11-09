@@ -1,4 +1,4 @@
-package org.lab1.fullbroadcast.server.object;
+package org.lab1.module.object;
 
 public class PublishInfo {
     public PublishInfo(String message, int delay) {

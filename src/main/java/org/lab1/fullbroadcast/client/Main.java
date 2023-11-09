@@ -1,6 +1,6 @@
 package org.lab1.fullbroadcast.client;
 
-import org.lab1.fullbroadcast.server.object.PublishInfo;
+import org.lab1.module.object.PublishInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
