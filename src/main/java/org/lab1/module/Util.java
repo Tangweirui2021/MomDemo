@@ -17,8 +17,8 @@ public class Util {
         }
         return serverSocket;
     }
-    public static Request ParsePortAndAddress(String str) {
-        var request = str.split(" ");
+    public static Request ParseMessage(String str) {
+        var request = str.split(" ", 2);
         switch (request[0]) {
             case "PUB":
                 return new Request(1, request[1]);
