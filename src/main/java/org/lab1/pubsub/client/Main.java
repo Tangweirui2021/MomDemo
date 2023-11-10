@@ -20,8 +20,6 @@ public class Main {
     private static final Logger logger = Logger.getLogger("CLIENT");
     private static final List<PublishInfoPS> _pub = new ArrayList<>();
     private static final List<String> _sub = new ArrayList<>();
-    private static final List<String> _get = new ArrayList<>();
-    private static int _wait = 1000;
     private static boolean _repeat = false;
     public static void main(String[] args) {
         logger.info("Client started...");
@@ -55,7 +53,7 @@ public class Main {
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
-                            out.write("PUB " + item.message.replace("%id",Integer.toString(mid)) + "\n");
+                            out.write("PUB " + item.message.replace("%id",Integer.toString(mid)) + " " + item.validity + "\n");
                             out.flush();
                             mid++;
                             logger.info("Message sent");
@@ -64,34 +62,27 @@ public class Main {
                 });
             }
             // 消息接收协程
-            if (!_get.isEmpty()) {
-                logger.info("Get: " + String.join(",", _sub));
-                exe.submit(()-> {
+            exe.submit(()-> {
+                while (!stopSignal) {
+                    String read = null;
                     try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
+                        read = in.readLine();
+                    } catch (SocketTimeoutException ignored) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    while (!stopSignal) {
-                        String read = null;
+                    if (read == null) {
                         try {
-                            read = in.readLine();
-                        } catch (SocketTimeoutException ignored) {
-                        } catch (IOException e) {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        if (read == null) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                            continue;
-                        }
-                        logger.info("Received message: " + read);
+                        continue;
                     }
-                });
-            }
+                    logger.info("Received message: " + read);
+                }
+            });
+
             while (!stopSignal) {
                 try {
                     Thread.sleep(1000);
