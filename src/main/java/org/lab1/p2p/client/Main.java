@@ -47,6 +47,7 @@ public class Main {
                     if(_pub.isEmpty()) {
                         return;
                     }
+                    int mid = 0;
                     do{
                         for (var item : _pub) {
                             try {
@@ -54,8 +55,9 @@ public class Main {
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
-                            out.write("PUB " + item.message + "\n");
+                            out.write("PUB " + item.message.replace("%id",Integer.toString(mid)) + "\n");
                             out.flush();
+                            mid++;
                             logger.info("Message sent");
                         }
                     }while (_repeat && !stopSignal);

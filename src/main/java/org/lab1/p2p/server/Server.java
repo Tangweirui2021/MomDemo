@@ -90,8 +90,8 @@ public class Server implements Runnable{
                 }
                 else {
                     msg = "GET " + list.removeFirst();
+                    System.out.println("GET: " + res.Message + " REMAIN: " + list.size());
                 }
-                System.out.println("GET: " + res.Message + " REMAIN: " + list.size());
                 return msg;
             } else {
                 logger.warning("Unknown operation: " + res.Operation);
