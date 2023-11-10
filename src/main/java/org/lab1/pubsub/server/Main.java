@@ -1,10 +1,13 @@
 package org.lab1.pubsub.server;
 
-import java.util.logging.Logger;
-
+@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 public class Main {
-    private static final Logger logger = Logger.getLogger("SERVER");
-    public static void main(String[] args) {
-        logger.info("Server started...");
+    public static void main(String[] args) throws InterruptedException {
+        var th = new Thread(new Server());
+        th.start();
+        synchronized (th)
+        {
+            th.wait();
+        }
     }
 }

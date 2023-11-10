@@ -39,11 +39,14 @@ public class Main {
                 logger.info("Pub: " + String.join(",", _pub.stream().map(x -> x.message).toArray(String[]::new)));
                 logger.info("Sub: " + String.join(",", _sub));
                 exe.submit(()-> {
+                    /*
                     for (var item : _sub) {
                         out.write("SUB " + item + "\n");
                         out.flush();
                         logger.info("Subscribe: " + item);
-                    }
+                    }*/
+                    //使用空格分隔sub
+                    out.write("SUB " + String.join(" ", _sub) + "\n");
                     if(_pub.isEmpty()) {
                         return;
                     }
