@@ -29,10 +29,14 @@ public class Server implements Runnable{
                 exe.submit(()->{
                     try (var in = new BufferedReader(new InputStreamReader(client.getInputStream()))
                             ; var out = new PrintWriter(client.getOutputStream())){
+                        int dryRun = 0;
                         while(client.isConnected() && !client.isClosed()) {
                             var message = in.readLine();
                             if (message == null) {
                                 Thread.sleep(10);
+                                dryRun++;
+                                if(dryRun >= 100)
+                                    break;
                                 continue;
                             }
                             var res = messageCallBack(message);
@@ -42,15 +46,17 @@ public class Server implements Runnable{
                             }
                         }
                     }catch (Exception ignored) {
-                        logger.warning("Failed to receive message");
-                    }
+                        // logger.warning("Failed to receive message");
+                    }/*
                     finally {
+
                         try {
                             client.close();
                         } catch (Exception ignored) {
                             logger.warning("Failed to close client");
                         }
-                    }
+                    }*/
+                    // logger.warning("EXIT");
                 });
             } catch (Exception e) {
                 logger.warning("Failed to accept client");
@@ -65,7 +71,7 @@ public class Server implements Runnable{
                 return null;
             }
             if (res.Operation == 0) {
-                System.out.println("SUB: " + res.Message);
+                //System.out.println("SUB: " + res.Message);
                 var tmp = res.Message.split(" ");
                 for (var item : tmp) {
                     if (!topics.containsKey(item)) {
@@ -73,15 +79,18 @@ public class Server implements Runnable{
                     }
                 }
             } else if (res.Operation == 1) {
-                System.out.println("PUB: " + res.Message);
+                //System.out.println("PUB: " + res.Message);
                 var topic = res.Message.split(" ", 2);
                 if (!topics.containsKey(topic[0])) {
                     logger.warning("Topic not exist : " + topic[0]);
+                    return "NONE";
                 }
                 topics.get(topic[0]).add(topic[1]);
+                return "SUCCESS";
             } else if (res.Operation == 2) {
                 if (!topics.containsKey(res.Message)) {
                     logger.warning("Topic not exist : " + res.Message);
+                    return "NE";
                 }
                 var list = topics.get(res.Message);
                 String msg;
@@ -90,7 +99,7 @@ public class Server implements Runnable{
                 }
                 else {
                     msg = "GET " + list.removeFirst();
-                    System.out.println("GET: " + res.Message + " REMAIN: " + list.size());
+                    //System.out.println("GET: " + res.Message + " REMAIN: " + list.size());
                 }
                 return msg;
             } else {
